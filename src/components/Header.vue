@@ -13,7 +13,7 @@ import { Input } from "./ui/input";
 </script>
 
 <template>
-    <div class="relative">
+    <div class="relative z-10">
         <nav class="fixed w-full bg-secondaryColor flex justify-between items-center px-8 py-5">
             <!-- Logo -->
             <img src="/public/images/sprout-logo.webp" alt="Sprout HR Logo">

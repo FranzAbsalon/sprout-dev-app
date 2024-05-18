@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/button'
 import { gsap } from 'gsap';
 import { nextTick, ref } from 'vue';
+import Main from '@/components/Main.vue';
+import Exported from '@/components/ExportedFiles.vue'
 import {
   Select,
   SelectContent,
@@ -10,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
 
 // Reactive State
     // State for Filters Section
@@ -25,6 +26,20 @@ import {
             // Animate the text in after content has changed
             gsap.fromTo(content.value, { x: -100, opacity: 0 }, { x: 0, opacity: 1, duration: 0.25 });
         }});
+    };
+
+    // For Buttons
+    const attendanceLogs = ref(true);
+    const activeButton = ref('attendance');
+
+    const showAttendanceLogs = () => {
+        attendanceLogs.value = true;
+        activeButton.value = 'attendance';
+    };
+
+    const showExportedFiles = () => {
+        attendanceLogs.value = false;
+        activeButton.value = 'exported';
     };
 
     // For Dropdowns
@@ -64,42 +79,50 @@ import {
             <h1 class="mt-6 text-2xl font-medium">Manage Attendance</h1>
             <h2 class="my-3">Attendance management is where you can generate, add, edit and export the logs of the employees.</h2>
             <menu class="py-3">
-                <div class="bg-[#e8fff0ff] p-4 rounded-md flex items-center gap-3 cursor-pointer">
-                    <font-awesome-icon icon="calendar-check" class="text-primaryColor"/>
+                <button 
+                    class="w-full p-4 rounded-md flex items-center gap-3 cursor-pointer hover:bg-[#e8fff0ff]/50" 
+                    :class="{'bg-[#e8fff0ff]': activeButton === 'attendance','text-black/50': activeButton !== 'attendance'}"
+                    @click="showAttendanceLogs"
+                >
+                    <font-awesome-icon icon="calendar-check" :class="{'text-primaryColor': activeButton === 'attendance'}"/>
                     <h3 class="font-medium">Attendance Logs</h3>
-                </div>
-                <div class="p-4 rounded-md flex items-center gap-3 text-black/50 cursor-pointer">
-                    <font-awesome-icon icon="download"/>
+                </button>
+                <button 
+                    class="p-4 rounded-md flex items-center gap-3 w-full cursor-pointer hover:bg-[#e8fff0ff]/50"
+                    :class="{'bg-[#e8fff0ff]': activeButton === 'exported','text-black/50': activeButton !== 'exported'}"  
+                    @click="showExportedFiles"
+                > 
+                    <font-awesome-icon icon="download" :class="{'text-primaryColor': activeButton === 'exported'}"/>
                     <h3 class="font-medium">Exported Files</h3>
-                </div>
+                </button>
             </menu>
         </section>
         <!-- Form Section -->
         <section class="flex-grow border-t-2">
-            <form action="" class="px-8 py-5">
+            <form v-if="attendanceLogs" action="" class="px-8 py-5">
                 <h3 class="font-medium">DATE RANGE</h3>
                 <menu class="py-4">Dito yung Calendar</menu>
                 <menu class="py-4">Dito yung Calendar</menu>
                 <div class="flex justify-between items-center mb-3">
-                    <h3>FILTERS</h3>
+                    <h3 class="font-medium">FILTERS</h3>
                     <button @click.prevent="toggleButton" class="text-[#0F6EEB] font-medium">{{ buttonText }}</button>
                 </div>
                 <section ref="contentContainer">
                     <div v-if="buttonText === 'Show All'" ref="content" class="content">
                         <p>
-                            <font-awesome-icon icon="building" class="pe-2"/>
+                            <font-awesome-icon icon="building" class="pe-2 w-3"/>
                             SPROUT SOLUTIONS
                         </p>
                         <p>
-                            <font-awesome-icon icon="users" class="pe-2"/>
+                            <font-awesome-icon icon="users" class="pe-2 w-3"/>
                             ALL
                         </p>
                         <p>
-                            <font-awesome-icon icon="location-dot" class="pe-2"/>
+                            <font-awesome-icon icon="location-dot" class="pe-2 w-3"/>
                             ALL
                         </p>
                         <p>
-                            <font-awesome-icon icon="user" class="pe-2"/>
+                            <font-awesome-icon icon="user" class="pe-2 w-3"/>
                             ALL
                         </p>
                     </div>
@@ -174,8 +197,8 @@ import {
             </form>
         </section>
         <!-- Sidebar Footer with Buttons -->
-        <footer class="grid justify-items-center border-t-2 p-6 gap-y-2">
-            <Button class="gap-3 bg-primaryColor w-full h-12 hover:bg-hoveredButton">
+        <footer v-if="attendanceLogs" class="grid justify-items-center border-t-2 p-6 gap-y-2">
+            <Button class="gap-3 bg-primaryColor w-full h-12 hover:bg-hoveredButton text-white">
                 <font-awesome-icon icon="magnifying-glass"/>Search
             </Button>
             <Button class="gap-3 bg-transparent text-black/30 border-2 w-full h-12 hover:bg-slate-50">
@@ -183,6 +206,12 @@ import {
             </Button>
         </footer>
     </div>
+    <main v-if="attendanceLogs">
+        <Main />
+    </main>
+    <main v-else>
+        <Exported />
+    </main>
 </template>
 
 <style scoped>
@@ -202,6 +231,9 @@ section p{
   white-space: nowrap;
 }
 
+.dynamic-section{
+    position: fixed;
+}
 .dynamic-section::-webkit-scrollbar {
   width: 5px; 
 }
@@ -212,7 +244,6 @@ section p{
 
 .dynamic-section::-webkit-scrollbar-thumb {
   background: #17AD49; 
-  border-radius: 25px;
 }
 
 .dynamic-section::-webkit-scrollbar-thumb:hover {
