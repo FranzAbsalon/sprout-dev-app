@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { nextTick, ref } from 'vue';
 import Main from '@/components/Main.vue';
 import Exported from '@/components/ExportedFiles.vue'
+import Calendar from '@/components/ui/Calendar.vue'
 import {
   Select,
   SelectContent,
@@ -12,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Label } from 'radix-vue';
 
 // Reactive State
     // State for Filters Section
@@ -19,16 +21,7 @@ import {
     const contentContainer = ref(null);
     const content = ref(null);
 
-    const toggleButton = () => {
-        gsap.to(content.value, { x: 100, opacity: 0, duration: 0.25, onComplete: async () => {
-            buttonText.value = buttonText.value === 'Show All' ? 'Hide All' : 'Show All';
-            await nextTick();  // Wait for DOM to update
-            // Animate the text in after content has changed
-            gsap.fromTo(content.value, { x: -100, opacity: 0 }, { x: 0, opacity: 1, duration: 0.25 });
-        }});
-    };
-
-    // For Buttons
+    // For Sidebar Navigation Buttons
     const attendanceLogs = ref(true);
     const activeButton = ref('attendance');
 
@@ -42,7 +35,34 @@ import {
         activeButton.value = 'exported';
     };
 
-    // For Dropdowns
+    // For Displaying Table
+    const showTable = ref(false);
+    const toggleView = () => {
+        showTable.value = !showTable.value;
+    };
+
+    // For Calendar Functionality
+    const selectedDate = ref({ from: null, to: null});
+    const updateDateRange = (date) => {
+        if(!selectedDate.value.from){
+            selectedDate.value.from = date;
+        }
+        else{
+            selectedDate.value.to = date;
+        }
+    }
+
+    // Animation for Hide and Show All Button 
+    const toggleButton = () => {
+        gsap.to(content.value, { x: 100, opacity: 0, duration: 0.25, onComplete: async () => {
+            buttonText.value = buttonText.value === 'Show All' ? 'Hide All' : 'Show All';
+            await nextTick();  // Wait for DOM to update
+            // Animate the text in after content has changed
+            gsap.fromTo(content.value, { x: -100, opacity: 0 }, { x: 0, opacity: 1, duration: 0.25 });
+        }});
+    };
+
+    // For Sidebar Dropdowns
     const companies = ref([
         { name: "Sprout Solutions", value: "sprout solutions" },
         { name: "McDolibee", value: "mcDolibee" },
@@ -101,8 +121,14 @@ import {
         <section class="flex-grow border-t-2">
             <form v-if="attendanceLogs" action="" class="px-8 py-5">
                 <h3 class="font-medium">DATE RANGE</h3>
-                <menu class="py-4">Dito yung Calendar</menu>
-                <menu class="py-4">Dito yung Calendar</menu>
+                <menu class="mt-1">
+                    <Label class="font-light text-sm">Date From</Label>
+                    <Calendar id="date-field" @date-selected="updateDateRange"/>
+                </menu>
+                <menu class="mb-5 mt-1">
+                    <Label class="font-light text-sm">Date To</Label>
+                    <Calendar id="date-field" @date-selected="updateDateRange"/>
+                </menu>
                 <div class="flex justify-between items-center mb-3">
                     <h3 class="font-medium">FILTERS</h3>
                     <button @click.prevent="toggleButton" class="text-[#0F6EEB] font-medium">{{ buttonText }}</button>
@@ -198,7 +224,7 @@ import {
         </section>
         <!-- Sidebar Footer with Buttons -->
         <footer v-if="attendanceLogs" class="grid justify-items-center border-t-2 p-6 gap-y-2">
-            <Button class="gap-3 bg-primaryColor w-full h-12 hover:bg-hoveredButton text-white">
+            <Button class="gap-3 bg-primaryColor w-full h-12 hover:bg-hoveredButton text-white" @click="toggleView">
                 <font-awesome-icon icon="magnifying-glass"/>Search
             </Button>
             <Button class="gap-3 bg-transparent text-black/30 border-2 w-full h-12 hover:bg-slate-50">
@@ -206,8 +232,9 @@ import {
             </Button>
         </footer>
     </div>
+    
     <main v-if="attendanceLogs">
-        <Main />
+        <Main :showTable="showTable" />
     </main>
     <main v-else>
         <Exported />

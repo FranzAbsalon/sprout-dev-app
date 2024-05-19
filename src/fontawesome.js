@@ -15,6 +15,9 @@ import {
   faBackward,
   faCaretLeft,
   faCaretRight,
+  faCalendarDays,
+  faChevronLeft,
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -31,7 +34,10 @@ library.add(
   faLocationDot,
   faPenToSquare,
   faForward,
-  faBackward
+  faBackward,
+  faCalendarDays,
+  faChevronLeft,
+  faChevronRight
 );
 
 export { FontAwesomeIcon };

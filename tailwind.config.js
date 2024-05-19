@@ -1,4 +1,5 @@
 const animate = require("tailwindcss-animate")
+// const { blackA, grass, gray, green } = require('@radix-ui/colors')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -23,6 +24,10 @@ module.exports = {
     },
     extend: {
       colors: {
+        // ...blackA,
+        // ...grass,
+        // ...gray,
+        // ...green,
         primaryColor: "#17AD49",
         secondaryColor: "#333333",
         primaryText: "#2D4F43",
